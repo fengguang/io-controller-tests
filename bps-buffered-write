@@ -1,0 +1,15 @@
+#!/bin/sh
+
+mkdir /cgroup/cp
+echo $$ > /cgroup/cp/tasks
+echo $((4<<20)) > /cgroup/cp/blkio.throttle.buffered_write_bps
+
+cp /dev/zero /fs/zero &
+
+mkdir /cgroup/dd
+echo $$ > /cgroup/dd/tasks
+echo $((2<<20)) > /cgroup/dd/blkio.throttle.buffered_write_bps
+
+dd if=/dev/zero of=/fs/zero1 bs=64k &
+dd if=/dev/zero of=/fs/zero2 bs=64k &
+

@@ -1,0 +1,79 @@
+#!/bin/bash
+
+BASE_DIR=$(dirname $0)
+cd $BASE_DIR
+
+grep -q "/fs " /proc/mounts || { echo "no filesystem mounted on /fs"; exit 1; }
+[ -f /cgroup/blkio.weight ] || mount -t cgroup -o blkio none /cgroup
+
+echo $((500<<20)) > /proc/sys/vm/dirty_bytes
+
+echo 1 > /debug/tracing/events/writeback/balance_dirty_pages/enable
+echo 1 > /debug/tracing/events/writeback/bdi_dirty_ratelimit/enable
+echo 1 > /debug/tracing/events/writeback/blkcg_dirty_ratelimit/enable
+echo 1 > /debug/tracing/events/writeback/task_io/enable
+
+# echo 1 > /sys/block/sda/trace/enable
+
+start_tracing() {
+	echo > /debug/tracing/trace
+
+	# the fifo trick serves to avoid killing bzip2 directly
+	test -p /tmp/trace_fifo || mkfifo /tmp/trace_fifo
+        bzip2 < /tmp/trace_fifo > trace.bz2 &
+        cat /debug/tracing/trace_pipe > /tmp/trace_fifo &
+	disown %% # avoid the "Terminated" message on kill
+        echo $! > pid-trace
+}
+
+run_cgroup_dd() {
+	nr_cg=$1
+	nr_dd=$2
+	shift 2 # the remaining $* will be fed to dd
+
+	for i in $(seq $nr_cg)
+	do
+		mkdir /cgroup/g$i
+		echo $$ > /cgroup/g$i/tasks
+
+		for j in $(seq $nr_dd)
+		do
+			dd if=/dev/zero of=/fs/zero-cg$i-dd$j $* &
+		done
+	done
+}
+
+export -f run_cgroup_dd
+
+for testcase
+do
+	dir=log/$testcase.`date +%F-%H-%M`
+	echo $dir
+	mkdir -p $dir
+	cd $dir
+
+	start_tracing
+
+	$BASE_DIR/$testcase
+
+	echo $$ > /cgroup/tasks
+	cat /cgroup/*/tasks > pid
+
+	sleep 100
+	grep . /cgroup/*/* 2>/dev/null > cgroups
+	kill $(cat pid pid-*)
+	rm pid-*
+	ls -l /fs > ls-files
+	uname -a > uname
+
+	wait
+	$BASE_DIR/plot-task-bw.sh .
+	$BASE_DIR/plot-balance_dirty_pages.sh .
+	$BASE_DIR/plot-blkcg-weight-ratelimit.sh .
+
+	chown -R wfg .
+	cd $BASE_DIR
+	rmdir /cgroup/*/
+	rm /fs/zero*
+
+done

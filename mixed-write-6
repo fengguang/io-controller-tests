@@ -1,0 +1,31 @@
+#!/bin/sh
+
+mkdir /cgroup/cp1
+echo $$ > /cgroup/cp1/tasks
+
+cp /dev/zero /fs/zero-cp1 &
+
+mkdir /cgroup/dd1
+echo $$ > /cgroup/dd1/tasks
+
+dd if=/dev/zero of=/fs/zero-dd1-direct bs=64k oflag=direct &
+
+mkdir /cgroup/cp2
+echo $$ > /cgroup/cp2/tasks
+
+cp /dev/zero /fs/zero-cp2 &
+
+mkdir /cgroup/dd2
+echo $$ > /cgroup/dd2/tasks
+
+dd if=/dev/zero of=/fs/zero-dd2-direct bs=64k oflag=direct &
+
+mkdir /cgroup/cp3
+echo $$ > /cgroup/cp3/tasks
+
+cp /dev/zero /fs/zero-cp3 &
+
+mkdir /cgroup/dd3
+echo $$ > /cgroup/dd3/tasks
+
+dd if=/dev/zero of=/fs/zero-dd3-direct bs=64k oflag=direct &

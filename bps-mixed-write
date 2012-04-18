@@ -1,0 +1,24 @@
+#!/bin/sh
+
+cp /dev/zero /fs/zero &
+
+mkdir /cgroup/cp
+echo $$ > /cgroup/cp/tasks
+echo 8:0 $((5<<20)) > /cgroup/cp/blkio.throttle.write_bps_device
+
+dd if=/dev/zero of=/fs/zero-11 bs=64k &
+
+mkdir /cgroup/dd
+echo $$ > /cgroup/dd/tasks
+echo 8:0 $((10<<20)) > /cgroup/dd/blkio.throttle.write_bps_device
+
+dd if=/dev/zero of=/fs/zero-21 bs=64k &
+dd if=/dev/zero of=/fs/zero-22 bs=64k &
+
+mkdir /cgroup/ddd
+echo $$ > /cgroup/ddd/tasks
+echo 8:0 $((10<<20)) > /cgroup/ddd/blkio.throttle.write_bps_device
+
+dd if=/dev/zero of=/fs/zero-31 bs=64k oflag=direct &
+dd if=/dev/zero of=/fs/zero-32 bs=64k oflag=direct &
+

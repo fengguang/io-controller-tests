@@ -1,0 +1,19 @@
+#!/bin/sh
+
+mkdir /cgroup/cp
+echo $$ > /cgroup/cp/tasks
+echo 300 > /cgroup/cp/blkio.weight
+
+cp /dev/zero /fs/zero-cg1-cp &
+
+mkdir /cgroup/dd
+echo $$ > /cgroup/dd/tasks
+echo 600 > /cgroup/dd/blkio.weight
+
+dd if=/dev/zero of=/fs/zero-cg2-dd-direct bs=64k oflag=direct &
+
+mkdir /cgroup/ddd
+echo $$ > /cgroup/ddd/tasks
+echo 900 > /cgroup/ddd/blkio.weight
+
+dd if=/dev/zero of=/fs/zero-cg3-dd        bs=64k &

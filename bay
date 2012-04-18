@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rsync -qptg --exclude=log/ * bay:io-controller-tests
+
+ssh root@bay "mount /dev/sda5 /fs 2>/dev/null; $HOME/io-controller-tests/run $*"
+
+rsync -a bay:io-controller-tests/log/*.`date +%F`-* log/

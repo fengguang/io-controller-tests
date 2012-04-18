@@ -1,0 +1,9 @@
+#!/bin/sh
+
+for i in $(seq 6)
+do
+	mkdir /cgroup/g$i
+	echo $$ > /cgroup/g$i/tasks
+
+	dd if=/dev/zero of=/fs/zero-cg$i bs=1M oflag=direct &
+done

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+mkdir /cgroup/cp
+echo $$ > /cgroup/cp/tasks
+
+cp /dev/zero /fs/zero-cg1-cp &
+
+mkdir /cgroup/dd
+echo $$ > /cgroup/dd/tasks
+
+dd if=/dev/zero of=/fs/zero-cg2-dd1 bs=64k &
+dd if=/dev/zero of=/fs/zero-cg2-dd2 bs=64k &
+
+mkdir /cgroup/ddd
+echo $$ > /cgroup/ddd/tasks
+
+dd if=/dev/zero of=/fs/zero-cg3-dd1 bs=64k &
+dd if=/dev/zero of=/fs/zero-cg3-dd2 bs=64k &
+dd if=/dev/zero of=/fs/zero-cg3-dd3 bs=64k &
+
