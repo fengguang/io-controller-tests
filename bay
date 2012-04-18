@@ -1,7 +1,10 @@
 #!/bin/sh
 
-rsync -qptg --exclude=log/ * bay:io-controller-tests
+TESTBOX=bay
+DEVICE=/dev/sda5
 
-ssh root@bay "mount /dev/sda5 /fs 2>/dev/null; $HOME/io-controller-tests/run $*"
+rsync -qptg --exclude=log/ * $TESTBOX:io-controller-tests
 
-rsync -a bay:io-controller-tests/log/*.`date +%F`-* log/
+ssh root@$TESTBOX "mount $DEVICE /fs 2>/dev/null; $HOME/io-controller-tests/run $*"
+
+rsync -a $TESTBOX:io-controller-tests/log/*.`date +%F`-* log/
