@@ -1,0 +1,38 @@
+My typical usage is
+
+	$ ./bay buffered-write direct-write mixed-write-2  # and possibly more cases
+	$ feh log/buffered-write-XXXXXX/
+	$ vim log/buffered-write-XXXXXX/trace.bz2
+
+There are 4 types of scripts.
+
+1) master scripts for running locally
+
+	bay
+	fat
+	snb
+
+One script for each test box. They
+- send the scripts to the remote test box
+- in the remote test box, run the specified test cases
+- copy back the test results
+
+You may want to create some new ones for yourself :-)
+
+2) master script for running inside the test box
+
+	run
+
+3) individual test cases
+
+	buffered-writes*
+	direct-writes*
+	mixed-writes*
+
+They should be feed as parameters to the "run" or "bay/fat/snb" scripts.
+
+4) plot scripts
+
+	plot-*
+
+Unfortunately they depend on several trace events in my private patch queue..
