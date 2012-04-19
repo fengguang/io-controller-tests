@@ -3,7 +3,9 @@
 BASE_DIR=$(dirname $0)
 cd $BASE_DIR
 
-grep -q "/fs " /proc/mounts || { echo "no filesystem mounted on /fs"; exit 1; }
+fstype=$(grep "/fs " /proc/mounts | cut -f3 -d' ')
+[[ $fstype ]] || { echo "no filesystem mounted on /fs"; exit 1; }
+
 [ -f /cgroup/blkio.weight ] || mount -t cgroup -o blkio none /cgroup
 
 echo $((500<<20)) > /proc/sys/vm/dirty_bytes
@@ -47,7 +49,8 @@ export -f run_cgroup_dd
 
 for testcase
 do
-	dir=log/$testcase.`date +%F-%H-%M`
+	[[ $HOST ]] || HOST=$(</etc/hostname)
+	dir=log/$HOST/$fstype/$testcase.`date +%F-%H-%M`
 	echo $dir
 	mkdir -p $dir
 	cd $dir

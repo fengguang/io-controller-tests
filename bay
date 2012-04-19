@@ -22,4 +22,4 @@ rsync -qptg --exclude=log/ * $TESTBOX:io-controller-tests
 
 ssh root@$TESTBOX "mount $DEVICE /fs 2>/dev/null; $HOME/io-controller-tests/run $*"
 
-rsync -a $TESTBOX:io-controller-tests/log/*.`date +%F`-* log/
+rsync -aR $TESTBOX:io-controller-tests/log/./$TESTBOX/*/*.`date +%F`-* log/
