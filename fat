@@ -1,7 +1,1 @@
-#!/bin/sh
-
-rsync -qptg * fat:io-controller-tests
-
-ssh root@fat "mount /dev/sda7 /fs 2>/dev/null; $HOME/io-controller-tests/run $*"
-
-rsync -a fat:io-controller-tests/log/*.`date +%F`-* log/
+bay

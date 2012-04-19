@@ -1,7 +1,22 @@
 #!/bin/sh
 
-TESTBOX=bay
-DEVICE=/dev/sda5
+TESTBOX=$(basename $0)
+
+case $TESTBOX in
+	bay)
+		DEVICE=/dev/sda5
+		;;
+	fat)
+		DEVICE=/dev/sda7
+		;;
+	snb)
+		DEVICE=/dev/disk/by-id/ata-WDC_WD1002FAEX-00Z3A0_WD-WCATR5431916-part7
+		;;
+	*)
+		echo unknown test box "$TESTBOX"
+		exit 1
+		;;
+esac
 
 rsync -qptg --exclude=log/ * $TESTBOX:io-controller-tests
 
