@@ -2,14 +2,15 @@
 
 mkdir /cgroup/cp
 echo $$ > /cgroup/cp/tasks
-echo 500 > /cgroup/cp/blkio.weight
 
-dd if=/dev/zero of=/fs/zero-1M bs=1M oflag=direct &
+dd if=/dev/zero of=/fs/zero-1M bs=1M oflag=direct conv=fsync &
 
 mkdir /cgroup/dd
 echo $$ > /cgroup/dd/tasks
-echo 1000 > /cgroup/dd/blkio.weight
 
-dd if=/dev/zero of=/fs/zero-64k bs=64k oflag=direct &
-dd if=/dev/zero of=/fs/zero-4k  bs=4k  oflag=direct &
+dd if=/dev/zero of=/fs/zero-64k bs=64k oflag=direct conv=fsync &
 
+mkdir /cgroup/ddd
+echo $$ > /cgroup/ddd/tasks
+
+dd if=/dev/zero of=/fs/zero-4k  bs=4k  oflag=direct conv=fsync &
