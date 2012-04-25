@@ -1,0 +1,8 @@
+#!/bin/sh
+
+mkdir /cgroup/dd
+echo $$ > /cgroup/dd/tasks
+
+dd if=/dev/zero of=/fs/zero-1M  bs=1M  oflag=direct conv=fsync &
+dd if=/dev/zero of=/fs/zero-64k bs=64k oflag=direct conv=fsync &
+dd if=/dev/zero of=/fs/zero-4k  bs=4k  oflag=direct conv=fsync &
